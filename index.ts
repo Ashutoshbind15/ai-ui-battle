@@ -1,14 +1,16 @@
-import { client, setAuth } from "./client";
-import {
-  createSession,
-  getProviders,
-  getSessionMessages,
-  prompt,
-} from "./utils";
-const apiKey = process.env.API_KEY!;
-const sessionId = process.env.SESSION_ID!;
+// import { client, setAuth } from "./client";
+// import {
+//   configureSubDirectory,
+//   createSession,
+//   execShellScript,
+//   getProviders,
+//   getSessionMessages,
+//   prompt,
+// } from "./utils";
+// const apiKey = process.env.API_KEY!;
+// const sessionId = process.env.SESSION_ID!;
 
-await setAuth(client, apiKey);
+// await setAuth(client, apiKey);
 
 // const session = await createSession(client);
 // console.log(JSON.stringify(session, null, 2));
@@ -23,5 +25,7 @@ await setAuth(client, apiKey);
 // );
 // console.log(JSON.stringify(response, null, 2));
 
-const messages = await getSessionMessages(client, sessionId);
-console.log(JSON.stringify(messages, null, 2));
+// const messages = await getSessionMessages(client, sessionId);
+// console.log(JSON.stringify(messages, null, 2));
+
+// await configureSubDirectory("client-test");

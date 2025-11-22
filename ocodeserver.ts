@@ -4,7 +4,15 @@ const opencode = await createOpencode({
   hostname: "127.0.0.1",
   port: 4096,
   config: {
-    model: "opencode/big-pickle",
+    permission: {
+      edit: "allow",
+      bash: {
+        "bun run lint": "allow",
+        "bun run build": "allow",
+        "*": "deny",
+      },
+      webfetch: "allow",
+    },
   },
 });
 
