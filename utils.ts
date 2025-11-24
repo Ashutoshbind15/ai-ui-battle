@@ -1,9 +1,10 @@
 import type { OpencodeClient } from "@opencode-ai/sdk";
 import fs from "fs";
+import { updateSingularTurn } from "./data/access";
 
 const pwd = process.cwd();
 
-export const createSession = async (
+export const createOpencodeSession = async (
   client: OpencodeClient,
   directory: string
 ) => {
@@ -29,7 +30,8 @@ export const getProviders = async (client: OpencodeClient) => {
 
 export const prompt = async (
   client: OpencodeClient,
-  sessionId: string,
+  opencodeSessionId: string,
+  dbSessionId: number,
   prompt: string,
   modelId: string,
   providerId: string,
@@ -49,13 +51,22 @@ export const prompt = async (
       },
     },
     path: {
-      id: sessionId,
+      id: opencodeSessionId,
     },
     query: {
       directory: finalDirPath,
     },
   });
-  return response;
+  if (response.error) {
+    await updateSingularTurn(
+      dbSessionId,
+      "failed",
+      response.error.data as string
+    );
+    throw new Error(response.error.data as string);
+  } else {
+    await updateSingularTurn(dbSessionId, "completed", undefined, new Date());
+  }
 };
 
 export const getSessionMessages = async (

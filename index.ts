@@ -1,14 +1,13 @@
-// import { client, setAuth } from "./client";
-// import {
-//   configureSubDirectory,
-//   createSession,
-//   execShellScript,
-//   getProviders,
-//   getSessionMessages,
-//   prompt,
-// } from "./utils";
-// const apiKey = process.env.API_KEY!;
-// const sessionId = process.env.SESSION_ID!;
+import { client, setAuth } from "./client";
+import {
+  configureSubDirectory,
+  execShellScript,
+  getProviders,
+  getSessionMessages,
+  prompt,
+} from "./utils";
+const apiKey = process.env.API_KEY!;
+const sessionId = process.env.SESSION_ID!;
 
 // await setAuth(client, apiKey);
 

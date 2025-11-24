@@ -2,12 +2,13 @@ import express from "express";
 import "dotenv/config";
 import {
   configureSubDirectory,
-  createSession,
+  createOpencodeSession,
   getProviders,
   prompt,
 } from "./utils";
 import { client, setAuth } from "./client";
 import cors from "cors";
+import { createBatch, createSession, createTurn } from "./data/access";
 
 const API_KEY = process.env.API_KEY!;
 
@@ -65,28 +66,46 @@ app.post("/runagents", async (req, res) => {
     });
   }
 
+  const batchId = await createBatch(modelConfigs);
+
   for (const modelConfig of modelConfigs) {
     const subDirectory = `${modelConfig.providerId}-${modelConfig.id}`;
     const finalDirPath = `tmp/${subDirectory}`;
     await configureSubDirectory(finalDirPath);
 
     const codePath = `${process.cwd()}/tmp/${subDirectory}`;
-    const session = await createSession(client, codePath);
-    if (session.error) {
+    const currentTime = new Date();
+    const opencodeSession = await createOpencodeSession(client, codePath);
+    if (opencodeSession.error) {
       return res.status(500).json({
         success: false,
         error: "Failed to create session",
       });
     }
 
-    await prompt(
+    const session = await createSession(
+      modelConfig.providerId,
+      modelConfig.id,
+      batchId,
+      opencodeSession.data.id,
+      codePath
+    );
+
+    await createTurn(session.id, currentTime);
+
+    prompt(
       client,
-      session.data.id,
+      opencodeSession.data.id,
+      session.id,
       message,
       modelConfig.id,
       modelConfig.providerId,
       codePath
-    );
+    )
+      .then(() => {})
+      .catch((e) => {
+        console.error(e);
+      });
   }
 
   res.json({
