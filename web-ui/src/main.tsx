@@ -15,5 +15,5 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/runs" element={<Runs />} />
       </Route>
     </Routes>
-  </BrowserRouter>
+  </BrowserRouter>,
 );

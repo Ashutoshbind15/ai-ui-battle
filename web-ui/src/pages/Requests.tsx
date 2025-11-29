@@ -45,7 +45,7 @@ export default function Requests() {
 
   const toggleModel = (id: string) => {
     setSelectedModels((prev) =>
-      prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id],
     );
   };
 

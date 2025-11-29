@@ -10,14 +10,14 @@ import { client, setAuth } from "./client";
 import cors from "cors";
 import { createBatch, createSession, createTurn } from "./data/access";
 
-const API_KEY = process.env.API_KEY!;
+const OPENCODE_API_KEY = process.env.OPENCODE_API_KEY!;
 
-if (!API_KEY) {
-  throw new Error("API_KEY is not set");
+if (!OPENCODE_API_KEY) {
+  throw new Error("OPENCODE_API_KEY is not set");
 }
 
 // todo: for now we setting static auth, later take in the providers, and the resp api keys while starting the container
-await setAuth(client, API_KEY);
+await setAuth(client, OPENCODE_API_KEY);
 
 const app = express();
 app.use(express.json());
@@ -36,7 +36,12 @@ app.get("/modelconfigs", async (req, res) => {
       .status(500)
       .json({ success: false, error: "Failed to get providers" });
   }
-  const response = [];
+  const response: {
+    id: string;
+    modelName: string;
+    providerId: string;
+    providerName: string;
+  }[] = [];
   const providers = providersData.providers;
   for (const provider of providers) {
     const providerId = provider.id;
@@ -88,7 +93,7 @@ app.post("/runagents", async (req, res) => {
       modelConfig.id,
       batchId,
       opencodeSession.data.id,
-      codePath
+      codePath,
     );
 
     await createTurn(session.id, currentTime);
@@ -100,12 +105,10 @@ app.post("/runagents", async (req, res) => {
       message,
       modelConfig.id,
       modelConfig.providerId,
-      codePath
-    )
-      .then(() => {})
-      .catch((e) => {
-        console.error(e);
-      });
+      codePath,
+    ).catch((e) => {
+      console.error(e);
+    });
   }
 
   res.json({

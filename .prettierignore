@@ -1,0 +1,3 @@
+# Ignore artifacts:
+
+# don't need anything for now, as it auto-ignores git-ignored files

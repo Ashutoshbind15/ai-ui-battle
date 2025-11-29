@@ -1,12 +1,13 @@
 import type { OpencodeClient } from "@opencode-ai/sdk";
 import fs from "fs";
+import { spawn } from "child_process";
 import { updateSingularTurn } from "./data/access";
 
 const pwd = process.cwd();
 
 export const createOpencodeSession = async (
   client: OpencodeClient,
-  directory: string
+  directory: string,
 ) => {
   const session = await client.session.create({
     body: {
@@ -35,7 +36,7 @@ export const prompt = async (
   prompt: string,
   modelId: string,
   providerId: string,
-  finalDirPath: string
+  finalDirPath: string,
 ) => {
   const response = await client.session.prompt({
     body: {
@@ -61,7 +62,7 @@ export const prompt = async (
     await updateSingularTurn(
       dbSessionId,
       "failed",
-      response.error.data as string
+      response.error.data as string,
     );
     throw new Error(response.error.data as string);
   } else {
@@ -71,7 +72,7 @@ export const prompt = async (
 
 export const getSessionMessages = async (
   client: OpencodeClient,
-  sessionId: string
+  sessionId: string,
 ) => {
   const messages = await client.session.messages({
     path: {
@@ -82,12 +83,14 @@ export const getSessionMessages = async (
 };
 
 export const configureSubDirectory = async (subdirPath: string) => {
-  await execShellScript(`starters/scripts/vite-react-ts-tw.sh`, [subdirPath]);
+  await execShellScript(`../starters/scripts/vite-react-ts-tw.sh`, [
+    subdirPath,
+  ]);
 };
 
 export const execShellScript = async (
   scriptPath: string,
-  args: string[] = []
+  args: string[] = [],
 ) => {
   // Resolve the script path from the project root so callers can pass
   // either an absolute path or a path relative to the repo.
@@ -99,14 +102,20 @@ export const execShellScript = async (
     throw new Error(`Shell script not found at path: ${resolvedPath}`);
   }
 
-  const proc = Bun.spawn(["/usr/bin/bash", resolvedPath, ...args], {
-    cwd: pwd,
-    stdin: "inherit",
-    stdout: "inherit",
-    stderr: "inherit",
-  });
+  const exitCode = await new Promise<number>((resolve, reject) => {
+    const child = spawn("/usr/bin/bash", [resolvedPath, ...args], {
+      cwd: pwd,
+      stdio: "inherit",
+    });
 
-  const exitCode = await proc.exited;
+    child.on("close", (code) => {
+      resolve(code ?? 1);
+    });
+
+    child.on("error", (err) => {
+      reject(err);
+    });
+  });
 
   if (exitCode !== 0) {
     throw new Error(`Shell script exited with code ${exitCode}`);

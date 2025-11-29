@@ -30,7 +30,7 @@ const Navbar = () => {
                   "transition-colors hover:text-foreground/80",
                   currentPath === item.path
                     ? "text-foreground"
-                    : "text-foreground/60"
+                    : "text-foreground/60",
                 )}
               >
                 {item.label}
