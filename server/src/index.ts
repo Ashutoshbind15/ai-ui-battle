@@ -1,13 +1,14 @@
+import "dotenv/config";
 import { client, setAuth } from "./client";
 import {
   configureSubDirectory,
   getProviders,
   getSessionMessages,
 } from "./utils";
-const apiKey = process.env.API_KEY!;
+const opencodeApiKey = process.env.OPENCODE_API_KEY!;
 const sessionId = process.env.SESSION_ID!;
 
-// await setAuth(client, apiKey);
+// await setAuth(client, opencodeApiKey);
 
 // const session = await createSession(client);
 // console.log(JSON.stringify(session, null, 2));
