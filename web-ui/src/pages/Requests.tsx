@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 import { Check, Bot, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -10,12 +11,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useModels } from "@/hooks/queries";
+import { useModels, useCreateBatch } from "@/hooks/queries";
+import { toast } from "sonner";
 
 export default function Requests() {
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
+  const [prompt, setPrompt] = useState("Create a simple todo app");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { data, isLoading, error } = useModels();
+  const createBatch = useCreateBatch();
 
   const availableModels = data?.models || [];
 
@@ -25,11 +30,35 @@ export default function Requests() {
     );
   };
 
-  const handleStartBattle = () => {
-    if (selectedModels.length === 0) return;
-    // In a real app, we'd dispatch the request here
-    console.log("Starting evaluation with:", selectedModels);
-    navigate("/runs");
+  const handleStartBattle = async () => {
+    if (selectedModels.length === 0 || !prompt.trim()) return;
+
+    const modelConfigs = selectedModels
+      .map((id) => {
+        const model = availableModels.find((m: any) => m.id === id);
+        return {
+          id,
+          providerId: model?.providerId || "",
+        };
+      })
+      .filter((config) => config.providerId);
+
+    setIsSubmitting(true);
+    try {
+      // Step 1: Create batch with sessions (stores prompt, creates sessions in setup_pending state)
+      await createBatch.mutateAsync({
+        modelConfigs,
+        prompt,
+      });
+
+      toast.success("Batch created successfully!");
+      navigate("/");
+    } catch (error) {
+      console.error("Error creating batch:", error);
+      toast.error("Error creating batch. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isLoading) {
@@ -65,6 +94,17 @@ export default function Requests() {
           Select the LLMs you want to evaluate. They will receive the same
           prompt and starter code.
         </p>
+      </div>
+
+      <div className="mb-8 space-y-2">
+        <h2 className="text-lg font-semibold">Prompt</h2>
+        <Input
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Enter your prompt here..."
+          className="max-w-2xl"
+          disabled={isSubmitting}
+        />
       </div>
 
       {availableModels.length === 0 ? (
@@ -135,10 +175,19 @@ export default function Requests() {
         <Button
           size="lg"
           onClick={handleStartBattle}
-          disabled={selectedModels.length === 0}
+          disabled={
+            selectedModels.length === 0 || isSubmitting || !prompt.trim()
+          }
           className="w-full sm:w-auto shadow-lg"
         >
-          Start Evaluation ({selectedModels.length})
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Starting...
+            </>
+          ) : (
+            `Start Evaluation (${selectedModels.length})`
+          )}
         </Button>
       </div>
     </div>

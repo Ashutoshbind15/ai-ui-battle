@@ -12,9 +12,14 @@
   },
   "scripts": {
     "typecheck": "tsc -b",
+    "fmt": "prettier . --write",
     "dev:opencode-server": "pnpm --filter server opencode-server",
     "dev:server": "pnpm --filter server dev",
     "dev:client": "pnpm --filter web-ui dev",
-    "dev:testutil": "pnpm --filter server testutil"
+    "dev:testutil": "pnpm --filter server testutil",
+    "db:push": "pnpm --filter server db:push",
+    "db:studio": "pnpm --filter server db:studio",
+    "db:generate": "pnpm --filter server db:generate",
+    "db:migrate": "pnpm --filter server db:migrate"
   }
 }

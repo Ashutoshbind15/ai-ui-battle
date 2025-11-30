@@ -2,9 +2,14 @@
 
 set -euo pipefail
 
-if ! command -v npm >/dev/null 2>&1; then
-  echo "Error: npm is required but not installed." >&2
-  exit 1
+if ! command -v pnpm >/dev/null 2>&1; then
+  echo "pnpm is not installed. Attempting to install via npm..." >&2
+  if command -v npm >/dev/null 2>&1; then
+    npm install -g pnpm
+  else
+    echo "Error: npm is required to install pnpm but is not installed." >&2
+    exit 1
+  fi
 fi
 
 APP_NAME="${1:-react-ts-tailwind-app}"
@@ -27,11 +32,10 @@ cp -R "$TEMPLATE_DIR" "$APP_NAME"
 
 # Remove lockfile and node_modules so the new app can install cleanly
 rm -rf "$APP_NAME/node_modules"
-rm -f "$APP_NAME/bun.lock" "$APP_NAME/package-lock.json" "$APP_NAME/yarn.lock" "$APP_NAME/pnpm-lock.yaml"
 
 cd "$APP_NAME"
 
-# Install base dependencies with npm
-npm install
+# Install base dependencies with pnpm
+pnpm install
 
 echo "Done. Project created in '$APP_NAME'."

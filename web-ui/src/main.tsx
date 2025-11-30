@@ -6,6 +6,7 @@ import Requests from "./pages/Requests.tsx";
 import Runs from "./pages/Runs.tsx";
 import Layout from "./components/layout/index.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "./components/ui/sonner.tsx";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/runs" element={<Runs />} />
         </Route>
       </Routes>
+      <Toaster />
     </QueryClientProvider>
   </BrowserRouter>,
 );
