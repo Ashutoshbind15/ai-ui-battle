@@ -17,6 +17,12 @@ importers:
         specifier: 5.9.3
         version: 5.9.3
 
+  images/coderunner:
+    dependencies:
+      "@opencode-ai/sdk":
+        specifier: ^1.0.78
+        version: 1.0.107
+
   server:
     dependencies:
       "@opencode-ai/sdk":

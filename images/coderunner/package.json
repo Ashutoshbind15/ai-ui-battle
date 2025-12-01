@@ -1,0 +1,14 @@
+{
+  "name": "coderunner",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.23.0",
+  "dependencies": {
+    "@opencode-ai/sdk": "^1.0.78"
+  }
+}

@@ -1,6 +1,7 @@
 packages:
   - "web-ui"
   - "server"
+  - "images/coderunner"
 
 minimumReleaseAge: 7200
 
