@@ -5,6 +5,8 @@ ENV PATH="$PNPM_HOME:$PATH"
 
 WORKDIR /app
 
+RUN mkdir /code
+
 RUN corepack enable
 
 # Install opencode CLI globally

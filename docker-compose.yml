@@ -16,5 +16,23 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:alpine
+    container_name: ai-ui-comparator-opencode-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  coderunner:
+    build:
+      context: ./images/coderunner
+    container_name: ai-ui-battle-coderunner
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
 volumes:
   postgres_data:
+  redis_data:

@@ -38,16 +38,15 @@ function App() {
         </div>
       </section>
 
-      <section className="container py-12 md:py-24 lg:py-32 border-t bg-muted/40">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 text-center px-4">
+      <section className="py-12 md:py-24 lg:py-32 border-t bg-muted/40">
+        <div className="container mx-auto grid grid-cols-1 gap-8 md:grid-cols-3 text-center px-4">
           <div className="flex flex-col items-center space-y-4 p-6 rounded-xl bg-card shadow-sm hover:shadow-md transition-all">
             <div className="p-3 rounded-full bg-primary/10 text-primary">
               <Zap className="w-6 h-6" />
             </div>
             <h3 className="text-xl font-bold">Fast Execution</h3>
             <p className="text-muted-foreground">
-              Scaffold and run multiple agents concurrently with optimized
-              Bun-based infrastructure.
+              Scaffold and run multiple agents concurrently.
             </p>
           </div>
           <div className="flex flex-col items-center space-y-4 p-6 rounded-xl bg-card shadow-sm hover:shadow-md transition-all">

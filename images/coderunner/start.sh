@@ -18,6 +18,15 @@ for i in $(seq 1 30); do
   sleep 1
 done
 
+# Start the event listener in the background
+node events.js &
+EVENTS_PID=$!
+echo "Started event listener (PID: $EVENTS_PID)"
+
 # Run the main application
-exec node index.js
+node index.js
+
+# Keep the container alive for inspection (todo: remove this later after testing)
+echo "Job finished. Container sleeping..."
+tail -f /dev/null
 

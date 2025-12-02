@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "motion/react";
 import {
   Maximize2,
   Minimize2,
@@ -11,6 +12,7 @@ import {
   CheckCircle2,
   Clock,
   Zap,
+  Lightbulb,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -274,7 +276,16 @@ function SessionCard({
               )}
               {session.status === "prompting" && (
                 <>
-                  <Zap className="w-8 h-8 mx-auto mb-3 text-yellow-500 animate-pulse" />
+                  <motion.div
+                    animate={{ y: [0, -10, 0], opacity: [1, 0.8, 1] }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <Lightbulb className="w-8 h-8 mx-auto mb-3 text-yellow-500" />
+                  </motion.div>
                   <p className="text-sm">AI is coding...</p>
                 </>
               )}
