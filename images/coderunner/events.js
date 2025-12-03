@@ -17,11 +17,14 @@ const listenToEvents = async () => {
     console.log("[events] Connected to event stream");
 
     for await (const event of events.stream) {
-      console.log(
-        "[events] Event:",
-        event.type,
-        JSON.stringify(event.properties, null, 2),
-      );
+      console.log("Event type:", event.type);
+      if (event.type === "message.updated") {
+        console.log(
+          "[events] Event:",
+          event.type,
+          JSON.stringify(event.properties, null, 2),
+        );
+      }
     }
   } catch (error) {
     console.error("[events] Error subscribing to events:", error);

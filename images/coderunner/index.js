@@ -1,5 +1,6 @@
 import client, { setAuth } from "./client.js";
 import { createS3Client, downloadS3Folder } from "./storage.js";
+import { execSync } from "child_process";
 
 const getModelsInfo = async (client) => {
   const models = await client.config.providers();
@@ -19,6 +20,14 @@ const setupTemplate = async (templateKey) => {
   const bucketName = process.env.S3_BUCKET_NAME;
   const s3Client = createS3Client();
   await downloadS3Folder(s3Client, bucketName, templateKey, "/code");
+
+  // Install dependencies after downloading template
+  console.log("Installing dependencies with pnpm...");
+  execSync("pnpm install", { cwd: "/code", stdio: "inherit" });
+  console.log("Dependencies installed.");
+
+  // todo: [high], along with the templates, ensure to add an instruction
+  // to follow the template coding style, and also explaining the structure
 };
 
 const createOpencodeSession = async (client, directory) => {
