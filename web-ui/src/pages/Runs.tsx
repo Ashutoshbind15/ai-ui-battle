@@ -125,10 +125,12 @@ function SessionCard({
   session,
   expanded,
   onExpand,
+  showBatchName,
 }: {
   session: Session;
   expanded: boolean;
   onExpand: () => void;
+  showBatchName?: boolean;
 }) {
   const runSession = useRunSession();
   const startDev = useStartDevServer();
@@ -158,8 +160,15 @@ function SessionCard({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b bg-muted/30">
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="font-medium text-sm">
-            {session.providerId}/{session.modelId}
+          <div className="flex flex-col">
+            <div className="font-medium text-sm">
+              {session.providerId}/{session.modelId}
+            </div>
+            {showBatchName && session.batchName && (
+              <span className="text-xs text-muted-foreground font-normal">
+                {session.batchName}
+              </span>
+            )}
           </div>
           <SessionStatusBadge status={session.status} />
           <DevServerStatusBadge status={session.devServerStatus} />
@@ -440,19 +449,15 @@ export default function Runs() {
 
       {/* Batch Prompt Banner */}
       {selectedBatch?.prompt && (
-        <div className="px-6 py-2 border-b bg-muted/30">
-          <Card className="border-muted bg-muted/50">
-            <CardContent className="pt-4">
-              <div className="flex items-start gap-2">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide mt-0.5">
-                  Prompt:
-                </span>
-                <p className="text-sm text-foreground flex-1 whitespace-pre-wrap">
-                  {selectedBatch.prompt}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="px-6 py-4 border-b bg-muted/10">
+          <div className="flex items-start gap-3 text-sm">
+            <span className="font-semibold text-muted-foreground uppercase tracking-wide text-xs mt-1 shrink-0">
+              Prompt:
+            </span>
+            <p className="text-foreground whitespace-pre-wrap font-mono leading-relaxed">
+              {selectedBatch.prompt}
+            </p>
+          </div>
         </div>
       )}
 
@@ -484,6 +489,7 @@ export default function Runs() {
                   session={session}
                   expanded={expandedRun === session.id}
                   onExpand={() => handleExpand(session.id)}
+                  showBatchName={!selectedBatchId}
                 />
               );
             })}

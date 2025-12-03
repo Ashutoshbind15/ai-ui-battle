@@ -1,29 +1,32 @@
+import express from "express";
 import "dotenv/config";
 import { client, setAuth } from "./client";
-import {
-  configureSubDirectory,
-  getProviders,
-  getSessionMessages,
-} from "./utils";
-const opencodeApiKey = process.env.OPENCODE_API_KEY!;
-const sessionId = process.env.SESSION_ID!;
+import cors from "cors";
+import infoRoutes from "./routes/info";
+import batchesRoutes from "./routes/batches";
+import sessionsRoutes from "./routes/sessions";
 
-// await setAuth(client, opencodeApiKey);
+const OPENCODE_API_KEY = process.env.OPENCODE_API_KEY!;
 
-// const session = await createSession(client);
-// console.log(JSON.stringify(session, null, 2));
+if (!OPENCODE_API_KEY) {
+  throw new Error("OPENCODE_API_KEY is not set");
+}
 
-// const providers = await getProviders(client);
-// console.log(JSON.stringify(providers, null, 2));
+// todo: for now we setting static auth, later take in the providers, and the resp api keys while starting the container
+await setAuth(client, OPENCODE_API_KEY);
 
-// const response = await prompt(
-//   client,
-//   sessionId,
-//   "All fine, but i see todos update in local storage, but on refresh, lost persistance"
-// );
-// console.log(JSON.stringify(response, null, 2));
+const app = express();
+app.use(express.json());
+app.use(cors());
 
-// const messages = await getSessionMessages(client, sessionId);
-// console.log(JSON.stringify(messages, null, 2));
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 
-// await configureSubDirectory("client-test");
+app.use("/", infoRoutes);
+app.use("/", batchesRoutes);
+app.use("/", sessionsRoutes);
+
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});

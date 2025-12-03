@@ -1,4 +1,4 @@
-import { eq, isNull, and, desc, sql } from "drizzle-orm";
+import { eq, isNull, and, desc, sql, count } from "drizzle-orm";
 import { db } from "../db";
 import { batches, sessions, turns } from "../db/schema";
 
@@ -138,10 +138,19 @@ export const getSession = async (sessionId: number) => {
 
 // Get all running sessions (dev server running)
 export const getRunningSessions = async () => {
-  return await db
-    .select()
+  const result = await db
+    .select({
+      session: sessions,
+      batchName: batches.name,
+    })
     .from(sessions)
+    .leftJoin(batches, eq(sessions.batchId, batches.id))
     .where(eq(sessions.devServerStatus, "running"));
+
+  return result.map((r) => ({
+    ...r.session,
+    batchName: r.batchName,
+  }));
 };
 
 // Update dev server status
@@ -243,29 +252,24 @@ export const createBatch = async (
     throw new Error("Failed to create batch");
   }
 
-  return batch.id;
+  return { id: batch.id, name: batch.name };
 };
 
 // Get all batches with session count only (slimmed down for list view)
 export const getAllBatches = async () => {
-  // Use a single query with subquery to get batches with session counts efficiently
   const result = await db
     .select({
       id: batches.id,
       name: batches.name,
       prompt: batches.prompt,
       createdAt: batches.createdAt,
-      sessionCount: sql<number>`(
-        SELECT COUNT(*)::int
-        FROM ${sessions}
-        WHERE ${sessions.batchId} = ${batches.id}
-      )`.as("session_count"),
+      sessionCount: count(sessions.id),
     })
     .from(batches)
+    .leftJoin(sessions, eq(batches.id, sessions.batchId))
+    .groupBy(batches.id)
     .orderBy(desc(batches.createdAt));
 
-  // Return batches with empty sessions array - frontend will use useBatch for full session details
-  // For dropdown display, we'll need to handle empty sessions.length gracefully
   return result.map((batch) => ({
     id: batch.id,
     name: batch.name,

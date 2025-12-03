@@ -19,6 +19,7 @@ export type DevServerStatus = "stopped" | "starting" | "running" | "error";
 export interface Session {
   id: number;
   batchId: number | null;
+  batchName?: string | null;
   opencodeSessionId: string | null;
   directory: string;
   modelId: string;

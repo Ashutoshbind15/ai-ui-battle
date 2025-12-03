@@ -5,12 +5,12 @@
   "private": true,
   "scripts": {
     "opencode-server": "tsx src/ocodeserver.ts",
-    "dev": "tsx src/server.ts",
+    "dev": "tsx src/index.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
-    "testutil": "tsx src/index.ts"
+    "testutil": "tsx src/test.ts"
   },
   "devDependencies": {
     "@types/cors": "2.8.19",
