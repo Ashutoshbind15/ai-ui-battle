@@ -1,6 +1,6 @@
 import { createOpencodeClient } from "@opencode-ai/sdk";
 
-const client = createOpencodeClient({
+export const client = createOpencodeClient({
   baseUrl: "http://localhost:4096",
 });
 

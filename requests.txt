@@ -1,0 +1,14 @@
+curl -d '{
+    "template": "react-ts-vite-tailwind-v4",
+    "sessionId": 1
+}' \
+-H "Content-Type: application/json" \
+-X POST http://localhost:3000/setup
+
+curl -d '{
+    "prompt": "Create a b2b2c saas landing page, follow the given code structure, ie react and vite, and add to the src/ accordingly, use tw as provided for the styling",
+    "sessionId": 1,
+    "modelId": "claude-haiku-4-5"
+}' \
+-H "Content-Type: application/json" \
+-X POST http://localhost:3000/execute

@@ -24,7 +24,7 @@ EVENTS_PID=$!
 echo "Started event listener (PID: $EVENTS_PID)"
 
 # Run the main application
-node index.js
+node server.js
 
 # Keep the container alive for inspection (todo: remove this later after testing)
 echo "Job finished. Container sleeping..."

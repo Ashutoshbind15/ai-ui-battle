@@ -10,6 +10,8 @@
   "packageManager": "pnpm@10.23.0",
   "dependencies": {
     "@aws-sdk/client-s3": "3.940.0",
-    "@opencode-ai/sdk": "^1.0.78"
+    "@opencode-ai/sdk": "^1.0.78",
+    "express": "5.1.0",
+    "redis": "5.10.0"
   }
 }
