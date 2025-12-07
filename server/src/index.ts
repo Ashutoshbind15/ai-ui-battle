@@ -5,6 +5,7 @@ import cors from "cors";
 import infoRoutes from "./routes/info";
 import batchesRoutes from "./routes/batches";
 import sessionsRoutes from "./routes/sessions";
+import promptsRoutes from "./routes/prompts";
 
 const OPENCODE_API_KEY = process.env.OPENCODE_API_KEY!;
 
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 app.use("/", infoRoutes);
 app.use("/", batchesRoutes);
 app.use("/", sessionsRoutes);
+app.use("/", promptsRoutes);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

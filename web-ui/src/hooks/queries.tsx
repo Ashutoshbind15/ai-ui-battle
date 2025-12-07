@@ -55,6 +55,117 @@ export interface ModelConfig {
   providerName: string;
 }
 
+// ==================== PROMPTS ====================
+
+export interface Prompt {
+  id: number;
+  title: string;
+  description: string;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const usePrompts = () => {
+  return useQuery({
+    queryKey: ["prompts"],
+    queryFn: async () => {
+      try {
+        const { data } = await axios.get(`${API_BASE}/prompts`);
+        if (data.success) {
+          return {
+            prompts: data.data as Prompt[],
+            success: true as const,
+          };
+        }
+        return {
+          prompts: [] as Prompt[],
+          success: false as const,
+          error: data.error as string,
+        };
+      } catch (error) {
+        console.error("Error fetching prompts:", error);
+        return {
+          prompts: [] as Prompt[],
+          success: false as const,
+          error: "Failed to fetch prompts",
+        };
+      }
+    },
+  });
+};
+
+export const useCreatePrompt = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      title,
+      description,
+    }: {
+      title: string;
+      description: string;
+    }) => {
+      const { data } = await axios.post(`${API_BASE}/prompts`, {
+        title,
+        description,
+      });
+      if (data.success) {
+        return data.data as Prompt;
+      }
+      throw new Error(data.error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["prompts"] });
+    },
+  });
+};
+
+export const useUpdatePrompt = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      title,
+      description,
+    }: {
+      id: number;
+      title: string;
+      description: string;
+    }) => {
+      const { data } = await axios.put(`${API_BASE}/prompts/${id}`, {
+        title,
+        description,
+      });
+      if (data.success) {
+        return data.data as Prompt;
+      }
+      throw new Error(data.error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["prompts"] });
+    },
+  });
+};
+
+export const useDeletePrompt = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const { data } = await axios.delete(`${API_BASE}/prompts/${id}`);
+      if (data.success) {
+        return true;
+      }
+      throw new Error(data.error);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["prompts"] });
+    },
+  });
+};
+
 // ==================== MODELS ====================
 
 export const useModels = () => {

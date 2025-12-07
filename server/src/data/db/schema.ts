@@ -1,4 +1,24 @@
-import { integer, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  integer,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+} from "drizzle-orm/pg-core";
+
+// ==================== PROMPTS ====================
+
+export const prompts = pgTable("prompts", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  title: text().notNull(),
+  description: text().notNull(), // The actual prompt to be sent
+  isDefault: boolean().notNull().default(false), // Mark as a default/starter prompt
+  createdAt: timestamp().notNull().defaultNow(),
+  updatedAt: timestamp().notNull().defaultNow(),
+});
+
+// ==================== SESSIONS & BATCHES ====================
 
 export const sessionStatusEnum = pgEnum("session_status", [
   "uninitialized",

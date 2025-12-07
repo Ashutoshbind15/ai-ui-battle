@@ -1,6 +1,51 @@
 import { eq, isNull, and, desc, sql, count } from "drizzle-orm";
 import { db } from "../db";
-import { batches, sessions, turns } from "../db/schema";
+import { batches, sessions, turns, prompts } from "../db/schema";
+
+// ==================== PROMPT MANAGEMENT ====================
+
+export const getAllPrompts = async () => {
+  const result = await db
+    .select()
+    .from(prompts)
+    .orderBy(desc(prompts.isDefault), desc(prompts.createdAt));
+  return result;
+};
+
+export const createPrompt = async (
+  title: string,
+  description: string,
+  isDefault: boolean = false,
+) => {
+  const [prompt] = await db
+    .insert(prompts)
+    .values({ title, description, isDefault })
+    .returning();
+  if (!prompt) {
+    throw new Error("Failed to create prompt");
+  }
+  return prompt;
+};
+
+export const updatePrompt = async (
+  promptId: number,
+  title: string,
+  description: string,
+) => {
+  const [prompt] = await db
+    .update(prompts)
+    .set({ title, description, updatedAt: new Date() })
+    .where(eq(prompts.id, promptId))
+    .returning();
+  if (!prompt) {
+    throw new Error("Failed to update prompt");
+  }
+  return prompt;
+};
+
+export const deletePrompt = async (promptId: number) => {
+  await db.delete(prompts).where(eq(prompts.id, promptId));
+};
 
 type ModelConfig = {
   providerId: string;
