@@ -1,7 +1,11 @@
 import express from "express";
 import { connectRedis, redisClient } from "./async.js";
 import { setup } from "./setup.js";
-import { runPrompt, doesDirectoryExist } from "./prompt.js";
+import {
+  runPrompt,
+  doesDirectoryExist,
+  createOpencodeSessionAndPublishEvent,
+} from "./prompt.js";
 import { client as opencodeClient, setAuth } from "./client.js";
 
 const app = express();
@@ -37,21 +41,22 @@ app.post("/setup", async (req, res) => {
     message: "Setup started",
   });
 
-  const eventBody = {
-    sessionId,
-    type: "setup",
-    status: "started",
-  };
-
   try {
-    await publishEvent(eventBody);
+    await publishEvent({
+      sessionId,
+      type: "session.setup.started",
+    });
     await setup(template);
-    eventBody.status = "completed";
-    await publishEvent(eventBody);
+    await publishEvent({
+      sessionId,
+      type: "session.setup.completed",
+    });
   } catch (error) {
-    eventBody.status = "failed";
-    eventBody.error = error.message;
-    await publishEvent(eventBody);
+    await publishEvent({
+      sessionId,
+      type: "session.setup.failed",
+      error: error.message,
+    });
     console.error("[setup] Error:", error);
   }
 });
@@ -80,21 +85,28 @@ app.post("/execute", async (req, res) => {
     message: "Execution started",
   });
 
-  const eventBody = {
-    sessionId,
-    type: "execute",
-    status: "started",
-  };
-
   try {
-    await publishEvent(eventBody);
-    await runPrompt(opencodeClient, prompt, modelId);
-    eventBody.status = "completed";
-    await publishEvent(eventBody);
+    const { opencodeSessionId } = await createOpencodeSessionAndPublishEvent(
+      opencodeClient,
+      sessionId,
+      modelId,
+    );
+
+    await publishEvent({
+      sessionId,
+      type: "session.prompt.started",
+    });
+    await runPrompt(opencodeClient, prompt, modelId, opencodeSessionId);
+    await publishEvent({
+      sessionId,
+      type: "session.prompt.completed",
+    });
   } catch (error) {
-    eventBody.status = "failed";
-    eventBody.error = error.message;
-    await publishEvent(eventBody);
+    await publishEvent({
+      sessionId,
+      type: "session.prompt.failed",
+      error: error.message,
+    });
     console.error("[execute] Error:", error);
   }
 });

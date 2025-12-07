@@ -1,6 +1,11 @@
 import fs from "fs";
+import { redisClient } from "./async.js";
 
 const CODE_DIR = "/code";
+
+const publishEvent = async (event) => {
+  await redisClient.publish("events", JSON.stringify(event));
+};
 
 const getModelsInfo = async (client) => {
   const models = await client.config.providers();
@@ -44,7 +49,11 @@ const sendPrompt = async (client, sessionId, modelId, prompt, directory) => {
   });
 };
 
-export const runPrompt = async (client, prompt, modelId) => {
+export const createOpencodeSessionAndPublishEvent = async (
+  client,
+  sessionId,
+  modelId,
+) => {
   const availableModelsInfo = await getModelsInfo(client);
   const modelInfo = availableModelsInfo.data.providers[0].models[modelId];
   if (!modelInfo) {
@@ -58,9 +67,19 @@ export const runPrompt = async (client, prompt, modelId) => {
     );
   }
 
-  console.log(opencodeSession);
-
   const opencodeSessionId = opencodeSession.data.id;
+
+  // Publish opencode.session.created event
+  await publishEvent({
+    sessionId,
+    opencodeSessionId,
+    type: "opencode.session.created",
+  });
+
+  return { opencodeSessionId };
+};
+
+export const runPrompt = async (client, prompt, modelId, opencodeSessionId) => {
   await sendPrompt(client, opencodeSessionId, modelId, prompt, CODE_DIR);
 };
 

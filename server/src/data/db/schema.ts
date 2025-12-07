@@ -1,10 +1,10 @@
 import {
+  boolean,
   integer,
   pgEnum,
   pgTable,
   text,
   timestamp,
-  boolean,
 } from "drizzle-orm/pg-core";
 
 // ==================== PROMPTS ====================
@@ -58,6 +58,11 @@ export const sessions = pgTable("sessions", {
   port: integer(), // Assigned port for dev server (null if not assigned)
   devServerStatus: devServerStatusEnum().notNull().default("stopped"),
   devServerPid: integer(), // Process ID of the dev server (for cleanup)
+});
+
+export const containerMetadata = pgTable("container_metadata", {
+  sessionId: integer().references(() => sessions.id),
+  containerId: text().notNull(),
 });
 
 export const turns = pgTable("turns", {
