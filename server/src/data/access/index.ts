@@ -127,13 +127,25 @@ export const createSession = async (
   return session;
 };
 
-// Get a session by ID
+// Get a session by ID with batch prompt
 export const getSession = async (sessionId: number) => {
-  const [session] = await db
-    .select()
+  const [result] = await db
+    .select({
+      session: sessions,
+      prompt: batches.prompt,
+    })
     .from(sessions)
+    .leftJoin(batches, eq(sessions.batchId, batches.id))
     .where(eq(sessions.id, sessionId));
-  return session;
+
+  if (!result) {
+    return null;
+  }
+
+  return {
+    ...result.session,
+    prompt: result.prompt,
+  };
 };
 
 // Get all running sessions (dev server running)
@@ -170,20 +182,34 @@ export const updateDevServerStatus = async (
   return session;
 };
 
-// Update session status and optionally set opencodeSessionId when setup completes
+// Update session status (and optionally error)
 export const updateSessionStatus = async (
   sessionId: number,
   status: SessionStatus,
-  opencodeSessionId?: string,
   error?: string,
 ) => {
   const [session] = await db
     .update(sessions)
     .set({
       status,
-      ...(opencodeSessionId && { opencodeSessionId }),
       ...(error && { error }),
     })
+    .where(eq(sessions.id, sessionId))
+    .returning();
+  if (!session) {
+    throw new Error("Failed to update session");
+  }
+  return session;
+};
+
+// Set opencodeSessionId for a session (separate from status updates)
+export const setOpencodeSessionId = async (
+  sessionId: number,
+  opencodeSessionId: string,
+) => {
+  const [session] = await db
+    .update(sessions)
+    .set({ opencodeSessionId })
     .where(eq(sessions.id, sessionId))
     .returning();
   if (!session) {

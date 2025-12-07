@@ -10,6 +10,7 @@ import { client } from "../client";
 import {
   createTurn,
   updateSessionStatus,
+  setOpencodeSessionId,
   reservePort,
   releasePort,
   getSession,
@@ -49,20 +50,20 @@ async function runAgentSessionWithDevServer(
       await updateSessionStatus(
         sessionId,
         "setup_failed",
-        undefined,
         `Failed to create opencode session: ${opencodeSession.error}`,
       );
       await releasePort(sessionId);
       return;
     }
 
-    // Step 3: Mark session as ready with opencode session ID
-    await updateSessionStatus(sessionId, "ready", opencodeSession.data.id);
+    // Step 3: Set opencode session ID and mark session as ready
+    await setOpencodeSessionId(sessionId, opencodeSession.data.id);
+    await updateSessionStatus(sessionId, "ready");
 
     // Step 4: Create turn and start prompting
     const currentTime = new Date();
     await createTurn(sessionId, currentTime);
-    await updateSessionStatus(sessionId, "prompting", opencodeSession.data.id);
+    await updateSessionStatus(sessionId, "prompting");
 
     // Step 5: Run the prompt
     await prompt(
@@ -95,7 +96,7 @@ async function runAgentSessionWithDevServer(
     console.error(`Session ${sessionId} failed:`, errorMessage);
 
     // Update session to failed state and release port
-    await updateSessionStatus(sessionId, "failed", undefined, errorMessage);
+    await updateSessionStatus(sessionId, "failed", errorMessage);
     await releasePort(sessionId);
   }
 }
