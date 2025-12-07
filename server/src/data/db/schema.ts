@@ -47,7 +47,6 @@ export const batches = pgTable("batches", {
 export const sessions = pgTable("sessions", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   batchId: integer().references(() => batches.id),
-  opencodeSessionId: text(),
   directory: text().notNull(),
   modelId: text().notNull(),
   providerId: text().notNull(),

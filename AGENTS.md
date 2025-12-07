@@ -78,7 +78,7 @@ batches (1) ──▶ (N) sessions (1) ──▶ (N) turns
 - `id`, `batchId`, `modelId`, `providerId`
 - `status`: uninitialized → setup_pending → ready → prompting → completed/failed
 - `devServerStatus`: stopped → starting → running → error
-- `port`, `devServerPid`, `directory`, `opencodeSessionId`
+- `port`, `devServerPid`, `directory`
 
 **turns** - Prompt/response cycles within a session
 

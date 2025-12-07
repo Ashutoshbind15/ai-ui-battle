@@ -10,7 +10,6 @@ import { client } from "../client";
 import {
   createTurn,
   updateSessionStatus,
-  setOpencodeSessionId,
   reservePort,
   releasePort,
   getSession,
@@ -56,8 +55,7 @@ async function runAgentSessionWithDevServer(
       return;
     }
 
-    // Step 3: Set opencode session ID and mark session as ready
-    await setOpencodeSessionId(sessionId, opencodeSession.data.id);
+  // Step 3: Mark session as ready
     await updateSessionStatus(sessionId, "ready");
 
     // Step 4: Create turn and start prompting

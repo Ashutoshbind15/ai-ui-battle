@@ -1,6 +1,5 @@
 import { db } from "./data/db";
 import { prompts } from "./data/db/schema";
-import { sql } from "drizzle-orm";
 
 const defaultPrompts = [
   {

@@ -1,10 +1,5 @@
 import { createClient } from "redis";
-import {
-  createTurn,
-  setOpencodeSessionId,
-  updateSessionStatus,
-  type SessionStatus,
-} from "./data/access";
+import { createTurn, updateSessionStatus, type SessionStatus } from "./data/access";
 
 const redisClient = createClient();
 
@@ -32,13 +27,6 @@ type BaseSessionFailureEvent = BaseSessionEvent & {
   error: string;
 };
 
-const handleOpencodeSessionCreated = async (
-  sessionId: number,
-  opencodeSessionId: string,
-) => {
-  await setOpencodeSessionId(sessionId, opencodeSessionId);
-};
-
 const handleSessionStatusChange = async (
   sessionId: number,
   status: SessionStatus,
@@ -64,7 +52,10 @@ const listener = (message: string, channel: string) => {
   if (event.type === "opencode.session.created") {
     const sessionId = event.sessionId;
     const opencodeSessionId = event.opencodeSessionId;
-    handleOpencodeSessionCreated(sessionId, opencodeSessionId);
+    console.log(
+      "[listener] opencode session created",
+      JSON.stringify({ sessionId, opencodeSessionId }),
+    );
     // commented out because as soon as this is triggered,
     // again it will go to prompting state very soon
     // handleSessionStatusChange(sessionId, "ready");

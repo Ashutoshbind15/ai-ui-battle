@@ -203,22 +203,6 @@ export const updateSessionStatus = async (
   return session;
 };
 
-// Set opencodeSessionId for a session (separate from status updates)
-export const setOpencodeSessionId = async (
-  sessionId: number,
-  opencodeSessionId: string,
-) => {
-  const [session] = await db
-    .update(sessions)
-    .set({ opencodeSessionId })
-    .where(eq(sessions.id, sessionId))
-    .returning();
-  if (!session) {
-    throw new Error("Failed to update session");
-  }
-  return session;
-};
-
 export const createTurn = async (sessionId: number, currentTime: Date) => {
   const [turn] = await db
     .insert(turns)
@@ -342,7 +326,6 @@ export const getBatchById = async (batchId: number) => {
     sessions: [] as Array<{
       id: number;
       batchId: number | null;
-      opencodeSessionId: string | null;
       directory: string;
       modelId: string;
       providerId: string;
@@ -367,7 +350,6 @@ export const getBatchById = async (batchId: number) => {
       batch.sessions.push({
         id: row.sessionId,
         batchId: batchId, // Use batchId from parameter
-        opencodeSessionId: null, // Not used in UI
         directory: "", // Not used in UI
         modelId: row.modelId,
         providerId: row.providerId,
